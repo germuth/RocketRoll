@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,7 +36,6 @@ public class GameThread extends Thread {
 	private Satellite mShip;
 	private Satellite mPlanet;
 	private Satellite mSun;
-	private Satellite mJupiter;
 
 	/** Message handler used by thread to interact with TextView */
 	private Handler mHandler;
@@ -65,13 +63,21 @@ public class GameThread extends Thread {
 
 		Resources res = context.getResources();
 		this.mShip = new Satellite(context.getResources().getDrawable(
+<<<<<<< HEAD
 				R.drawable.rocket), 1);
+=======
+				R.drawable.spaceship));
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 		this.mPlanet = new Satellite(context.getResources().getDrawable(
 				R.drawable.planet), 10);
 		this.mSun = new Satellite(context.getResources().getDrawable(
+<<<<<<< HEAD
 				R.drawable.sun), 1000);
 		this.mJupiter = new Satellite(context.getResources().getDrawable(
 				R.drawable.jupiter), 100);
+=======
+				R.drawable.sun));
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 		
 		// load background image as a Bitmap instead of a Drawable b/c
 		// we don't need to transform it and it's faster to draw this way
@@ -85,6 +91,7 @@ public class GameThread extends Thread {
 	public void doStart() {
 		synchronized (mSurfaceHolder) {
 			//pick initial locations
+<<<<<<< HEAD
 //			mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
 //			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
 //			mPlanet.xVel += 200;
@@ -94,6 +101,12 @@ public class GameThread extends Thread {
 			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 2) + 150);
 			mPlanet.xVel += 125;
 			mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 2);
+=======
+			mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
+			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 100);
+			mPlanet.xVel += 150;
+			mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 
 			mLastTime = System.currentTimeMillis() + 100;
 			setState(STATE_RUNNING);
@@ -307,10 +320,6 @@ public class GameThread extends Thread {
 			case MotionEvent.ACTION_UP:
 				mShip.xVel = event.getX() - lastXPos;
 				mShip.yVel = -Math.abs(event.getY() - lastYPos);
-//				if(mShip.yVel >= 30){
-				mShip.image = mContext.getResources().getDrawable(R.drawable.animation_rocket);
-				((AnimationDrawable)mShip.image).start();
-//				}
 				break;
 			}
 			return true;
@@ -338,11 +347,16 @@ public class GameThread extends Thread {
 		mPlanet.setBounds();
 		mPlanet.image.draw(canvas);
 		
+<<<<<<< HEAD
 //		mShip.setBounds();
 //		mShip.image.draw(canvas);
 //		
 //		mJupiter.setBounds();
 //		mJupiter.image.draw(canvas);
+=======
+		mShip.setBounds();
+		mShip.image.draw(canvas);
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 		
 		canvas.restore();
 	}
@@ -355,11 +369,6 @@ public class GameThread extends Thread {
 	private void updatePhysics() {
 		long now = System.currentTimeMillis();
 
-		// Fg = G * m1 * m2
-		//          -------
-		//            r^2
-		//
-		
 		// Do nothing if mLastTime is in the future.
 		// This allows the game-start to delay the start of the physics
 		// by 100ms or whatever.
@@ -370,27 +379,42 @@ public class GameThread extends Thread {
 
 		//change position of each celestial object
 		//the ship
+<<<<<<< HEAD
 		//move around jupiter
 //		mShip.applyGravityFrom(mJupiter);
 //		mShip.updatePhysics(elapsed);
+=======
+		mShip.updatePhysics(elapsed);
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 		
 		//the sun
 		//doesn't move
 		
 		//the planet
 		//should be accelerating in direction of sun
+<<<<<<< HEAD
 		mPlanet.applyGravityFrom(mSun);
+=======
+		int xDiff = mPlanet.xPos - mSun.xPos;
+		int yDiff = mPlanet.yPos - mSun.yPos;
+		mPlanet.xAcc = -(xDiff / 20);
+		mPlanet.yAcc = -(yDiff / 20);
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 		mPlanet.updatePhysics(elapsed);
 
 		mLastTime = now;
 
 		int result = STATE_LOSE;
 		if(mShip.getRect().intersect(mSun.getRect())){
+			result = STATE_LOSE;
 			setState(result, "YOU BURN IN HELL");
 		}
+<<<<<<< HEAD
 //		if(mShip.getRect().intersect(mJupiter.getRect())){
 //			setState(result, "GAS GIANT");
 //		}
+=======
+>>>>>>> parent of 35d2f20... Adeded Jupiter
 		if(mShip.getRect().intersect(mPlanet.getRect())){
 			result = STATE_WIN;
 			setState(result, "YOU WIN");
