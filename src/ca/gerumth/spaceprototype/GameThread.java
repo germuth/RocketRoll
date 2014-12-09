@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +37,7 @@ public class GameThread extends Thread {
 	private Satellite mShip;
 	private Satellite mPlanet;
 	private Satellite mSun;
+	private Satellite mJupiter;
 
 	/** Message handler used by thread to interact with TextView */
 	private Handler mHandler;
@@ -63,11 +65,13 @@ public class GameThread extends Thread {
 
 		Resources res = context.getResources();
 		this.mShip = new Satellite(context.getResources().getDrawable(
-				R.drawable.spaceship));
+				R.drawable.rocket));
 		this.mPlanet = new Satellite(context.getResources().getDrawable(
 				R.drawable.planet));
 		this.mSun = new Satellite(context.getResources().getDrawable(
 				R.drawable.sun));
+		this.mJupiter = new Satellite(context.getResources().getDrawable(
+				R.drawable.jupiter));
 		
 		// load background image as a Bitmap instead of a Drawable b/c
 		// we don't need to transform it and it's faster to draw this way
@@ -82,9 +86,10 @@ public class GameThread extends Thread {
 		synchronized (mSurfaceHolder) {
 			//pick initial locations
 			mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
-			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 100);
-			mPlanet.xVel += 150;
+			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
+			mPlanet.xVel += 200;
 			mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
+			mJupiter.setPos(mCanvasWidth / 4, mCanvasHeight / 2);
 
 			mLastTime = System.currentTimeMillis() + 100;
 			setState(STATE_RUNNING);
@@ -298,6 +303,10 @@ public class GameThread extends Thread {
 			case MotionEvent.ACTION_UP:
 				mShip.xVel = event.getX() - lastXPos;
 				mShip.yVel = -Math.abs(event.getY() - lastYPos);
+//				if(mShip.yVel >= 30){
+				mShip.image = mContext.getResources().getDrawable(R.drawable.animation_rocket);
+				((AnimationDrawable)mShip.image).start();
+//				}
 				break;
 			}
 			return true;
@@ -328,6 +337,9 @@ public class GameThread extends Thread {
 		mShip.setBounds();
 		mShip.image.draw(canvas);
 		
+		mJupiter.setBounds();
+		mJupiter.image.draw(canvas);
+		
 		canvas.restore();
 	}
 
@@ -339,6 +351,11 @@ public class GameThread extends Thread {
 	private void updatePhysics() {
 		long now = System.currentTimeMillis();
 
+		// Fg = G * m1 * m2
+		//          -------
+		//            r^2
+		//
+		
 		// Do nothing if mLastTime is in the future.
 		// This allows the game-start to delay the start of the physics
 		// by 100ms or whatever.
@@ -349,6 +366,11 @@ public class GameThread extends Thread {
 
 		//change position of each celestial object
 		//the ship
+		//move around jupiter
+		int xDiff = mShip.xPos - mJupiter.xPos;
+		int yDiff = mShip.yPos - mJupiter.yPos;
+		mShip.xAcc = -(xDiff / 200);
+		mShip.yAcc = -(yDiff / 200);
 		mShip.updatePhysics(elapsed);
 		
 		//the sun
@@ -356,8 +378,8 @@ public class GameThread extends Thread {
 		
 		//the planet
 		//should be accelerating in direction of sun
-		int xDiff = mPlanet.xPos - mSun.xPos;
-		int yDiff = mPlanet.yPos - mSun.yPos;
+		xDiff = mPlanet.xPos - mSun.xPos;
+		yDiff = mPlanet.yPos - mSun.yPos;
 		mPlanet.xAcc = -(xDiff / 20);
 		mPlanet.yAcc = -(yDiff / 20);
 		mPlanet.updatePhysics(elapsed);
@@ -366,8 +388,10 @@ public class GameThread extends Thread {
 
 		int result = STATE_LOSE;
 		if(mShip.getRect().intersect(mSun.getRect())){
-			result = STATE_LOSE;
 			setState(result, "YOU BURN IN HELL");
+		}
+		if(mShip.getRect().intersect(mJupiter.getRect())){
+			setState(result, "GAS GIANT");
 		}
 		if(mShip.getRect().intersect(mPlanet.getRect())){
 			result = STATE_WIN;

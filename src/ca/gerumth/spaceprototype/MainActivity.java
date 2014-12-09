@@ -7,7 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 /**
+ * TODO
+ * add animated gifs to canvas!
+ * maybe with this:
+ * http://developingthedream.blogspot.in/2011/01/android-canvas-frame-by-frame-animation.html
  * 
+ * Planet Images:
+ * http://cache2.asset-cache.net/xc/187541964.jpg?v=2&c=IWSAsset&k=2&d=IQFlM360i9ZsAJYW8pRyli9fES7dfkuBjwBtQNnGCS81
  * @author Aaron
  */
 public class MainActivity extends Activity {
