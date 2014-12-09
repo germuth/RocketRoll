@@ -65,13 +65,13 @@ public class GameThread extends Thread {
 
 		Resources res = context.getResources();
 		this.mShip = new Satellite(context.getResources().getDrawable(
-				R.drawable.rocket));
+				R.drawable.rocket), 1);
 		this.mPlanet = new Satellite(context.getResources().getDrawable(
-				R.drawable.planet));
+				R.drawable.planet), 10);
 		this.mSun = new Satellite(context.getResources().getDrawable(
-				R.drawable.sun));
+				R.drawable.sun), 1000);
 		this.mJupiter = new Satellite(context.getResources().getDrawable(
-				R.drawable.jupiter));
+				R.drawable.jupiter), 100);
 		
 		// load background image as a Bitmap instead of a Drawable b/c
 		// we don't need to transform it and it's faster to draw this way
@@ -85,11 +85,15 @@ public class GameThread extends Thread {
 	public void doStart() {
 		synchronized (mSurfaceHolder) {
 			//pick initial locations
-			mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
-			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
-			mPlanet.xVel += 200;
-			mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
-			mJupiter.setPos(mCanvasWidth / 4, mCanvasHeight / 2);
+//			mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
+//			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
+//			mPlanet.xVel += 200;
+//			mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
+//			mJupiter.setPos(mCanvasWidth / 4, mCanvasHeight / 2);
+			
+			mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 2) + 150);
+			mPlanet.xVel += 125;
+			mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 2);
 
 			mLastTime = System.currentTimeMillis() + 100;
 			setState(STATE_RUNNING);
@@ -334,11 +338,11 @@ public class GameThread extends Thread {
 		mPlanet.setBounds();
 		mPlanet.image.draw(canvas);
 		
-		mShip.setBounds();
-		mShip.image.draw(canvas);
-		
-		mJupiter.setBounds();
-		mJupiter.image.draw(canvas);
+//		mShip.setBounds();
+//		mShip.image.draw(canvas);
+//		
+//		mJupiter.setBounds();
+//		mJupiter.image.draw(canvas);
 		
 		canvas.restore();
 	}
@@ -367,21 +371,15 @@ public class GameThread extends Thread {
 		//change position of each celestial object
 		//the ship
 		//move around jupiter
-		int xDiff = mShip.xPos - mJupiter.xPos;
-		int yDiff = mShip.yPos - mJupiter.yPos;
-		mShip.xAcc = -(xDiff / 200);
-		mShip.yAcc = -(yDiff / 200);
-		mShip.updatePhysics(elapsed);
+//		mShip.applyGravityFrom(mJupiter);
+//		mShip.updatePhysics(elapsed);
 		
 		//the sun
 		//doesn't move
 		
 		//the planet
 		//should be accelerating in direction of sun
-		xDiff = mPlanet.xPos - mSun.xPos;
-		yDiff = mPlanet.yPos - mSun.yPos;
-		mPlanet.xAcc = -(xDiff / 20);
-		mPlanet.yAcc = -(yDiff / 20);
+		mPlanet.applyGravityFrom(mSun);
 		mPlanet.updatePhysics(elapsed);
 
 		mLastTime = now;
@@ -390,9 +388,9 @@ public class GameThread extends Thread {
 		if(mShip.getRect().intersect(mSun.getRect())){
 			setState(result, "YOU BURN IN HELL");
 		}
-		if(mShip.getRect().intersect(mJupiter.getRect())){
-			setState(result, "GAS GIANT");
-		}
+//		if(mShip.getRect().intersect(mJupiter.getRect())){
+//			setState(result, "GAS GIANT");
+//		}
 		if(mShip.getRect().intersect(mPlanet.getRect())){
 			result = STATE_WIN;
 			setState(result, "YOU WIN");
