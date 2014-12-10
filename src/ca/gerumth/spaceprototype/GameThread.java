@@ -1,10 +1,19 @@
 package ca.gerumth.spaceprototype;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,18 +21,21 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
+import ca.gerumth.spaceprototype.levelParser.LevelParser;
 
 public class GameThread extends Thread {
+	private static final int ALLOWED_DISTANCE_OFF_SCREEN = 200;
 	private Context mContext;
 	// width and height of screen in pixels
 	private int mCanvasHeight;
 	private int mCanvasWidth;
 
 	private Bitmap mBackgroundImage;
-	private Satellite mShip;
-	private Satellite mPlanet;
-	private Satellite mSun;
-	private Satellite mJupiter;
+	private Satellite mRocket;
+	private ArrayList<Satellite> mSatellites;
+	// private Satellite mPlanet;
+	// private Satellite mSun;
+	// private Satellite mJupiter;
 
 	// handler used to talk with containing view (GameView)
 	// more specifically, set textview with win/lose etc
@@ -31,7 +43,8 @@ public class GameThread extends Thread {
 
 	// Used to figure out elapsed time between frames
 	private long mLastTime;
-
+	// holds the current level number
+	private int mLevel;
 	private GameState mState;
 
 	// Indicate whether the surface has been created and is ready to draw
@@ -44,12 +57,14 @@ public class GameThread extends Thread {
 		mSurfaceHolder = surfaceHolder;
 		mHandler = handler;
 		mContext = context;
+		this.mLevel = 1;
 
+		this.mSatellites = new ArrayList<Satellite>();
 		Resources res = context.getResources();
-		this.mShip = 	new Satellite(context.getResources().getDrawable(R.drawable.rocket));
-		this.mPlanet = 	new Satellite(context.getResources().getDrawable(R.drawable.planet));
-		this.mSun = 	new Satellite(context.getResources().getDrawable(R.drawable.sun));
-		this.mJupiter = new Satellite(context.getResources().getDrawable(R.drawable.jupiter));
+		this.mRocket = new Satellite(context.getResources().getDrawable(R.drawable.rocket));
+		// this.mPlanet = new Satellite(context.getResources().getDrawable(R.drawable.earth));
+		// this.mSun = new Satellite(context.getResources().getDrawable(R.drawable.sun));
+		// this.mJupiter = new Satellite(context.getResources().getDrawable(R.drawable.jupiter));
 
 		// load background image as a Bitmap instead of a Drawable b/c
 		// we don't need to transform it and it's faster to draw this way
@@ -59,21 +74,39 @@ public class GameThread extends Thread {
 	// starts the game
 	public void doStart() {
 		synchronized (mSurfaceHolder) {
-			setInitialPositions();
-			mLastTime = System.currentTimeMillis() + 100;
-			setState(GameState.PRERUN);
+			XmlPullParser xmlParser;
+			try {
+				xmlParser = XmlPullParserFactory.newInstance().newPullParser();
+
+				InputStream levelStream = levelStream = mContext.getApplicationContext()
+						.getAssets().open("level_" + mLevel + ".xml");
+				xmlParser.setInput(levelStream, null);
+
+				mSatellites = LevelParser.parseLevel(xmlParser, mContext, mRocket, mCanvasHeight,
+						mCanvasWidth);
+
+				mRocket.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
+
+				mLastTime = System.currentTimeMillis() + 100;
+				setState(GameState.PRERUN);
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
-	
-	public void setInitialPositions() {
-		// pick initial locations of all planets
-		mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
-		mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
-		mPlanet.xVel = 200;
-		mPlanet.yVel = 0;
-		mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
-		mJupiter.setPos(mCanvasWidth / 4, mCanvasHeight / 2);
-	}
+
+	// public void setInitialPositions() {
+	// // pick initial locations of all planets
+	//
+	// mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
+	// mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
+	// mPlanet.xVel = 200;
+	// mPlanet.yVel = 0;
+	// mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
+	// mJupiter.setPos(mCanvasWidth / 4, mCanvasHeight / 2);
+	// }
 
 	@Override
 	public void run() {
@@ -117,13 +150,14 @@ public class GameThread extends Thread {
 					}
 					break;
 				case MotionEvent.ACTION_UP :
-					mShip.xVel = event.getX() - lastXPos;
-					mShip.yVel = -Math.abs(event.getY() - lastYPos);
+					mRocket.xVel = event.getX() - lastXPos;
+					mRocket.yVel = -Math.abs(event.getY() - lastYPos);
 					// if(mShip.yVel >= 30){
-					mShip.image = mContext.getResources().getDrawable(R.drawable.animation_rocket);
-					((AnimationDrawable) mShip.image).start();
+					mRocket.image = mContext.getResources()
+							.getDrawable(R.drawable.animation_rocket);
+					((AnimationDrawable) mRocket.image).start();
 					// }
-					if(this.mState == GameState.PRERUN){
+					if (this.mState == GameState.PRERUN) {
 						this.mState = GameState.RUNNING;
 					}
 					break;
@@ -141,24 +175,19 @@ public class GameThread extends Thread {
 		canvas.drawBitmap(mBackgroundImage, 0, 0, null);
 		canvas.save();
 
-		mSun.setBounds();
-		mSun.image.draw(canvas);
+		mRocket.setBounds();
+		mRocket.image.draw(canvas);
 
-		mPlanet.setBounds();
-		mPlanet.image.draw(canvas);
-
-		mShip.setBounds();
-		mShip.image.draw(canvas);
-
-		mJupiter.setBounds();
-		mJupiter.image.draw(canvas);
-
+		for (Satellite s : mSatellites) {
+			s.setBounds();
+			s.image.draw(canvas);
+		}
 		canvas.restore();
 	}
 
 	private void updatePhysics() {
 		int xDiff, yDiff;
-		
+
 		long now = System.currentTimeMillis();
 		// Do nothing if mLastTime is in the future.
 		// This allows the game-start to delay the start of the physics
@@ -168,44 +197,52 @@ public class GameThread extends Thread {
 
 		double elapsed = (now - mLastTime) / 1000.0;
 
-		// change position of each celestial object
-		// the ship
-		// move around jupiter
-		if (mState == GameState.RUNNING) {
-			xDiff = mShip.xPos - mJupiter.xPos;
-			yDiff = mShip.yPos - mJupiter.yPos;
-			mShip.xAcc = -(xDiff / 20.0);
-			mShip.yAcc = -(yDiff / 20.0);
-			mShip.updatePhysics(elapsed);
+		// change all accelarations due to orbit
+		for (Satellite sat : mSatellites) {
+			for (Satellite orbiting : sat.effected) {
+				xDiff = orbiting.xPos - sat.xPos;
+				yDiff = orbiting.yPos - sat.yPos;
+				orbiting.xAcc = -(xDiff / (1.0 / sat.xGrav));
+				orbiting.yAcc = -(yDiff / (1.0 / sat.yGrav));
+			}
 		}
-
-		// the sun
-		// doesn't move
-
-		// the planet
-		// should be accelerating in direction of sun
-		xDiff = mPlanet.xPos - mSun.xPos;
-		yDiff = mPlanet.yPos - mSun.yPos;
-		mPlanet.xAcc = -(xDiff / 20.0);
-		mPlanet.yAcc = -(yDiff / 20.0);
-		mPlanet.updatePhysics(elapsed);
+		// update new velocities and positions
+		for (Satellite sat : mSatellites) {
+			sat.updatePhysics(elapsed);
+		}
+		if (mState == GameState.RUNNING) {
+			this.mRocket.updatePhysics(elapsed);
+		}
 
 		mLastTime = now;
 
 		GameState result = GameState.LOSE;
-		if (mShip.getRect().intersect(mSun.getRect())) {
-			setState(result, "YOU BURN IN HELL");
+		// check for intersection
+		for (Satellite sat : mSatellites) {
+			Rect rocketRect = mRocket.getRect();
+			if (rocketRect.intersect(sat.getRect())) {
+				if (sat.name.equals("earth")) {
+					result = GameState.WIN;
+				} else {
+					setState(GameState.LOSE, "");
+					break;
+				}
+			}
 		}
-		if (mShip.getRect().intersect(mJupiter.getRect())) {
-			setState(result, "GAS GIANT");
+		if (result == GameState.WIN)
+			setState(result, "");
+		// check if rocket has left screen
+		if (mRocket.xPos - ALLOWED_DISTANCE_OFF_SCREEN > mCanvasWidth
+				|| mRocket.xPos + ALLOWED_DISTANCE_OFF_SCREEN < 0) {
+			setState(GameState.LOSE, "");
 		}
-		if (mShip.getRect().intersect(mPlanet.getRect())) {
-			result = GameState.WIN;
-			setState(result, "YOU WIN");
+		if (mRocket.yPos - ALLOWED_DISTANCE_OFF_SCREEN > mCanvasHeight
+				|| mRocket.yPos + ALLOWED_DISTANCE_OFF_SCREEN < 0) {
+			setState(GameState.LOSE, "");
 		}
 	}
-	
-	//on state change, send message to containing GameView
+
+	// on state change, send message to containing GameView
 	public void setState(GameState state, CharSequence message) {
 		synchronized (mSurfaceHolder) {
 			mState = state;
@@ -229,6 +266,7 @@ public class GameThread extends Thread {
 					break;
 				case WIN :
 					str = "You win";
+					this.mLevel++;
 					break;
 			}
 			if (message != null) {
@@ -243,12 +281,12 @@ public class GameThread extends Thread {
 			mHandler.sendMessage(msg);
 		}
 	}
-	
+
 	public void setState(GameState state) {
 		setState(state, null);
 	}
-	
-	//Callback invoked when the surface dimensions change
+
+	// Callback invoked when the surface dimensions change
 	public void setSurfaceSize(int width, int height) {
 		// synchronized to make sure these all change atomically
 		synchronized (mSurfaceHolder) {
@@ -270,7 +308,7 @@ public class GameThread extends Thread {
 		}
 		setState(GameState.RUNNING);
 	}
-	
+
 	/**
 	 * Used to signal the thread whether it should be running or not. Passing true allows the thread
 	 * to run; passing false will shut it down if it's already running.
@@ -282,7 +320,7 @@ public class GameThread extends Thread {
 			mRun = b;
 		}
 	}
-	
+
 	public void pause() {
 		synchronized (mSurfaceHolder) {
 			if (mState == GameState.RUNNING)

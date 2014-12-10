@@ -1,5 +1,7 @@
 package ca.gerumth.spaceprototype;
 
+import java.util.ArrayList;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
@@ -8,23 +10,54 @@ import android.graphics.drawable.Drawable;
  * @author Aaron
  */
 public class Satellite {
-	int xPos;
-	int yPos;
-	double xVel;
-	double yVel;
-	double xAcc;
-	double yAcc;
-	Drawable image;
-	int imageHeight;
-	int imageWidth;
+	public String name;
+	//position
+	public int xPos;
+	public int yPos;
+	//velocity
+	public double xVel;
+	public double yVel;
+	//acceleration
+	public double xAcc;
+	public double yAcc;
+	//gravity strength
+	public double xGrav;
+	public double yGrav;
+	//other celestial bodies whose acceleration are effected by this celestial body
+	//think of it as the things that orbit this
+	public ArrayList<Satellite> effected;
+	//image
+	public Drawable image;
+	public int imageHeight;
+	public int imageWidth;
 	
-	public Satellite(Drawable im){
+	public Satellite(){
+		name = "";
 		xPos = 0;
 		yPos = 0;
 		xVel = 0;
 		yVel = 0;
 		xAcc = 0;
 		yAcc = 0;
+		xGrav = 0;
+		yGrav = 0;
+		effected = new ArrayList<Satellite>();
+		image = null;
+		imageHeight = -1;
+		imageWidth = -1;
+	}
+	
+	public Satellite(Drawable im){
+		name = "";
+		xPos = 0;
+		yPos = 0;
+		xVel = 0;
+		yVel = 0;
+		xAcc = 0;
+		yAcc = 0;
+		xGrav = 0;
+		yGrav = 0;
+		effected = new ArrayList<Satellite>();
 		image = im;
 		imageHeight = im.getIntrinsicHeight();
 		imageWidth = im.getIntrinsicWidth();

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Level>
+    <CelestialBody>
+        <Name>earth</Name>
+        <XPosition>2</XPosition>
+        <YPosition>6,150</YPosition>
+        <XSpeed>200</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0</XGravity>
+        <YGravity>0</YGravity>
+        <Satellites></Satellites>
+        <Image>earth</Image>
+    </CelestialBody>
+    <CelestialBody>
+        <Name>sun</Name>
+        <XPosition>2</XPosition>
+        <YPosition>6</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0.05</XGravity>
+        <YGravity>0.05</YGravity>
+        <Satellites>earth</Satellites>
+        <Image>sun</Image>
+    </CelestialBody>
+</Level>
