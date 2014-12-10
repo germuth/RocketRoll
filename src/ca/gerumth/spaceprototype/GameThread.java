@@ -21,6 +21,7 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
+import ca.gerumth.spaceprototype.Geometry.Polygon;
 import ca.gerumth.spaceprototype.levelParser.LevelParser;
 
 public class GameThread extends Thread {
@@ -97,17 +98,6 @@ public class GameThread extends Thread {
 		}
 	}
 
-	// public void setInitialPositions() {
-	// // pick initial locations of all planets
-	//
-	// mShip.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
-	// mPlanet.setPos(mCanvasWidth / 2, (mCanvasHeight / 6) + 150);
-	// mPlanet.xVel = 200;
-	// mPlanet.yVel = 0;
-	// mSun.setPos(mCanvasWidth / 2, mCanvasHeight / 6);
-	// mJupiter.setPos(mCanvasWidth / 4, mCanvasHeight / 2);
-	// }
-
 	@Override
 	public void run() {
 		while (mRun) {
@@ -153,9 +143,9 @@ public class GameThread extends Thread {
 					mRocket.xVel = event.getX() - lastXPos;
 					mRocket.yVel = -Math.abs(event.getY() - lastYPos);
 					// if(mShip.yVel >= 30){
-					mRocket.image = mContext.getResources()
-							.getDrawable(R.drawable.animation_rocket);
-					((AnimationDrawable) mRocket.image).start();
+//					mRocket.image = mContext.getResources()
+//							.getDrawable(R.drawable.animation_rocket);
+//					((AnimationDrawable) mRocket.image).start();
 					// }
 					if (this.mState == GameState.PRERUN) {
 						this.mState = GameState.RUNNING;
@@ -175,14 +165,19 @@ public class GameThread extends Thread {
 		canvas.drawBitmap(mBackgroundImage, 0, 0, null);
 		canvas.save();
 
+		// rotate rocket so it always faces where it is headed
+		canvas.save();
+		//should be Math.atan2(y, x)
+		canvas.rotate((int) -(Math.tan(mRocket.xVel / mRocket.yVel) * 57.2957795), mRocket.xPos,
+				mRocket.yPos);
 		mRocket.setBounds();
 		mRocket.image.draw(canvas);
+		canvas.restore();
 
 		for (Satellite s : mSatellites) {
 			s.setBounds();
 			s.image.draw(canvas);
 		}
-		canvas.restore();
 	}
 
 	private void updatePhysics() {
@@ -218,9 +213,9 @@ public class GameThread extends Thread {
 
 		GameState result = GameState.LOSE;
 		// check for intersection
+		Polygon rocketRect = mRocket.getRectangle();
 		for (Satellite sat : mSatellites) {
-			Rect rocketRect = mRocket.getRect();
-			if (rocketRect.intersect(sat.getRect())) {
+			if (sat.getCircle().intersects(rocketRect)){
 				if (sat.name.equals("earth")) {
 					result = GameState.WIN;
 				} else {

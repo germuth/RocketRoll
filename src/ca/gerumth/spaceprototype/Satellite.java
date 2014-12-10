@@ -2,6 +2,10 @@ package ca.gerumth.spaceprototype;
 
 import java.util.ArrayList;
 
+import ca.gerumth.spaceprototype.Geometry.Circle;
+import ca.gerumth.spaceprototype.Geometry.Polygon;
+import ca.gerumth.spaceprototype.Geometry.Point;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
@@ -98,5 +102,23 @@ public class Satellite {
 	
 	public Rect getRect(){
 		return new Rect(getLeftBorder(), getTopBorder(), getRightBorder(), getBottomBorder());
+	}
+	
+	public Polygon getRectangle(){
+		Point[] points = new Point[4];
+		//top left
+		points[0] = new Point(getLeftBorder(), getTopBorder());
+		//top right
+		points[1] = new Point(getRightBorder(), getTopBorder());
+		//bottom right
+		points[2] = new Point(getRightBorder(), getBottomBorder());
+		//bottom left
+		points[3] = new Point(getLeftBorder(), getBottomBorder());
+		
+		return new Polygon(points);
+	}
+	
+	public Circle getCircle(){
+		return new Circle(xPos, yPos, Math.max(imageWidth, imageHeight));
 	}
 }
