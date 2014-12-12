@@ -92,9 +92,12 @@ public class LevelParser {
 								currentSat.yGrav = Double.parseDouble(xmlParser.getText());
 								break;
 							case SATELLITES :
-								String planetName = xmlParser.getText();
-								if(!planetName.isEmpty()){
-									currentSat.effected.add(nameToObject.get(xmlParser.getText()));
+								String planets = xmlParser.getText();
+								if(!planets.isEmpty()){
+									elements = xmlParser.getText().split(",");
+									for(String s: elements){
+										currentSat.effected.add(nameToObject.get(s));										
+									}
 								} break;
 							case IMAGE :
 								currentSat.image = nameToDrawable(context.getResources(),
@@ -119,6 +122,10 @@ public class LevelParser {
 			return res.getDrawable(R.drawable.jupiter);
 		} else if (name.equals("sun")) {
 			return res.getDrawable(R.drawable.sun);
+		}else if (name.equals("saturn")) {
+			return res.getDrawable(R.drawable.saturn);
+		} else if (name.equals("pluto")){
+			return res.getDrawable(R.drawable.pluto);
 		}
 		return null;
 	}

@@ -26,11 +26,13 @@ public final class R {
         public static final int earth=0x7f020001;
         public static final int ic_launcher=0x7f020002;
         public static final int jupiter=0x7f020003;
-        public static final int rocket=0x7f020004;
-        public static final int rocket_flame_big=0x7f020005;
-        public static final int rocket_flame_small=0x7f020006;
-        public static final int space=0x7f020007;
-        public static final int sun=0x7f020008;
+        public static final int pluto=0x7f020004;
+        public static final int rocket=0x7f020005;
+        public static final int rocket_flame_big=0x7f020006;
+        public static final int rocket_flame_small=0x7f020007;
+        public static final int saturn=0x7f020008;
+        public static final int space=0x7f020009;
+        public static final int sun=0x7f02000a;
     }
     public static final class id {
         public static final int gameView=0x7f070000;

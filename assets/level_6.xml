@@ -2,8 +2,8 @@
 <Level>
     <CelestialBody>
         <Name>earth</Name>
-        <XPosition>2,200</XPosition>
-        <YPosition>6</YPosition>
+        <XPosition>4,-15</XPosition>
+        <YPosition>6,130</YPosition>
         <XSpeed>0</XSpeed>
         <YSpeed>0</YSpeed>
         <XGravity>0</XGravity>
@@ -12,14 +12,14 @@
         <Image>earth</Image>
     </CelestialBody>
     <CelestialBody>
-        <Name>saturn</Name>
-        <XPosition>2</XPosition>
+        <Name>jupiter</Name>
+        <XPosition>4</XPosition>
         <YPosition>2</YPosition>
         <XSpeed>0</XSpeed>
         <YSpeed>0</YSpeed>
-        <XGravity>0.03</XGravity>
-        <YGravity>0.03</YGravity>
+        <XGravity>0.05</XGravity>
+        <YGravity>0.05</YGravity>
         <Satellites>rocket</Satellites>
-        <Image>saturn</Image>
+        <Image>jupiter</Image>
     </CelestialBody>
 </Level>

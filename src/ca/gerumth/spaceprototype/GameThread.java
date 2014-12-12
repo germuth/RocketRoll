@@ -13,8 +13,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,7 +23,7 @@ import ca.gerumth.spaceprototype.Geometry.Polygon;
 import ca.gerumth.spaceprototype.levelParser.LevelParser;
 
 public class GameThread extends Thread {
-	private static final int ALLOWED_DISTANCE_OFF_SCREEN = 200;
+	private static final int ALLOWED_DISTANCE_OFF_SCREEN = 250;
 	private Context mContext;
 	// width and height of screen in pixels
 	private int mCanvasHeight;
@@ -63,9 +61,6 @@ public class GameThread extends Thread {
 		this.mSatellites = new ArrayList<Satellite>();
 		Resources res = context.getResources();
 		this.mRocket = new Satellite(context.getResources().getDrawable(R.drawable.rocket));
-		// this.mPlanet = new Satellite(context.getResources().getDrawable(R.drawable.earth));
-		// this.mSun = new Satellite(context.getResources().getDrawable(R.drawable.sun));
-		// this.mJupiter = new Satellite(context.getResources().getDrawable(R.drawable.jupiter));
 
 		// load background image as a Bitmap instead of a Drawable b/c
 		// we don't need to transform it and it's faster to draw this way
@@ -79,14 +74,14 @@ public class GameThread extends Thread {
 			try {
 				xmlParser = XmlPullParserFactory.newInstance().newPullParser();
 
-				InputStream levelStream = levelStream = mContext.getApplicationContext()
+				InputStream levelStream = mContext.getApplicationContext()
 						.getAssets().open("level_" + mLevel + ".xml");
 				xmlParser.setInput(levelStream, null);
 
 				mSatellites = LevelParser.parseLevel(xmlParser, mContext, mRocket, mCanvasHeight,
 						mCanvasWidth);
 
-				mRocket.setPos(mCanvasWidth / 2, mCanvasHeight - mCanvasHeight / 6);
+				mRocket.setPos(mCanvasWidth / 2, (mCanvasHeight - mCanvasHeight / 6) + 75);
 
 				mLastTime = System.currentTimeMillis() + 100;
 				setState(GameState.PRERUN);
@@ -167,8 +162,11 @@ public class GameThread extends Thread {
 
 		// rotate rocket so it always faces where it is headed
 		canvas.save();
-		//should be Math.atan2(y, x)
-		canvas.rotate((int) -(Math.tan(mRocket.xVel / mRocket.yVel) * 57.2957795), mRocket.xPos,
+		
+		//rotates rocket in the direction it is moving based on x and y velocity
+		//http://gamedev.stackexchange.com/questions/19209/rotate-entity-to-match-current-velocity
+//		canvas.rotate((int) -(Math.tan(mRocket.xVel / mRocket.yVel) * 57.2957795), mRocket.xPos,
+		canvas.rotate((int) (-270 + Math.atan2(mRocket.yVel, mRocket.xVel) * 57.2957795), mRocket.xPos,
 				mRocket.yPos);
 		mRocket.setBounds();
 		mRocket.image.draw(canvas);
@@ -217,7 +215,7 @@ public class GameThread extends Thread {
 		for (Satellite sat : mSatellites) {
 			if (sat.getCircle().intersects(rocketRect)){
 				if (sat.name.equals("earth")) {
-					result = GameState.WIN;
+						result = GameState.WIN;
 				} else {
 					setState(GameState.LOSE, "");
 					break;

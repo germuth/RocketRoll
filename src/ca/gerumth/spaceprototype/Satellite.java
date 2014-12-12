@@ -119,6 +119,6 @@ public class Satellite {
 	}
 	
 	public Circle getCircle(){
-		return new Circle(xPos, yPos, Math.max(imageWidth, imageHeight));
+		return new Circle(xPos, yPos, Math.max(imageWidth, imageHeight) / 2);
 	}
 }

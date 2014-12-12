@@ -3,23 +3,40 @@ package ca.gerumth.spaceprototype;
 public class Geometry {
 
 	public static class Point {
-		int x;
-		int y;
-		double xx;
-		double yy;
-		public Point(int xx, int yy) {
-			x = xx;
-			y = yy;
-		}
+		double x;
+		double y;
 		public Point(double d, double e) {
 			// TODO Auto-generated constructor stub
-			xx = d;
-			yy = e;
+			x = d;
+			y = e;
 		}
+		public Point add(double val){
+			return new Point(x + val, y + val);
+		}
+		public Point add(Point other){
+			return new Point(x + other.x, y + other.y);
+		}
+		public Point subtract(Point other){
+			return new Point(x - other.x, y - other.y);
+		}
+		public Point multiply(Point other){
+			return new Point(x * other.x, y * other.y);
+		}
+		public double dotProduct(Point other){
+			return x*other.x + y*other.y;
+		}
+	}
+
+	private static double distance(Point a, Point b){
+		return distance(a.x, a.y, b.x, b.y);
 	}
 	
 	private static double distance(double x1, double y1, double x2, double y2){
 		return Math.sqrt( Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) );
+	}
+	
+	private static double distSquared(double x1, double y1, double x2, double y2){
+		return Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2);
 	}
 	
 	public static class LineSegment {
@@ -67,22 +84,37 @@ public class Geometry {
 		}
 		
 		//intersection between circle and line segment
+		//compare distance from line segment to center point
+		//if larger/smaller than radius for intersects
 		//http://i.stack.imgur.com/P556i.png
+		//http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
 		private boolean intersects(LineSegment ls) {
-			Point A = ls.a;
-			Point B = ls.b;
-			Point C = this.getCenter();
-			//Project AC vector onto AB, resulting in AD
-//			Point AB = new Point(B.x-A.x, B.y-A.y);
-//			Point AC = new Point(C.x-A.x, C.y-A.y);
-//			Point AD = AB * (AB dot AC) / (AB dot AB);
-			double CF = ((B.x - A.x) * (C.x - A.x) + (B.y - A.y) * (C.y - A.y))
-					/ ((B.x - A.x) ^ 2 + (B.y - A.y) ^ 2);
-			double Dx = A.x + (B.x - A.x) * CF;
-			double Dy = A.y + (B.y - A.y) * CF;
+			Point v = ls.a;
+			Point w = ls.b;
+			Point p = this.getCenter();
 			
-			double dist = distance(C.x, C.y, Dx, Dy);
-			return dist <= this.r;
+			// Consider the line extending the segment, parameterized as v + t (w - v).
+			// We find projection of point p onto the line. 
+			// It falls where t = [(p-v) . (w-v)] / |w-v|^2
+			
+			double lengthSquared = distSquared(v.x, v.y, w.x, w.y);
+			double t = ( p.subtract(v) ).dotProduct( w.subtract(v) ) / lengthSquared; 
+			
+			//distance between circle center and line
+			double distance = 0.0;
+			
+			if(t < 0.0){
+				//center is beyond v
+				distance = distance(p, v);
+			}else if(t > 1.0){
+				//center is beyond w
+				distance = distance(p, w);
+			}else{
+				Point projection = ( v.add(t) ).multiply(w.subtract(v));
+				distance = distance(p, projection);
+			}
+			
+			return distance <= this.r;
 		}
 
 
