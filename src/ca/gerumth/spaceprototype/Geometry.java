@@ -46,6 +46,28 @@ public class Geometry {
 			a = aa;
 			b = bb;
 		}
+//		public void truncateLine(double length){
+//			double lengthAB = Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2);
+//			lengthAB = Math.sqrt(lengthAB);
+//			
+//			double xdelta = b.x - a.x;
+//			double ydelta = b.y - a.y;
+//			this.b = new Point(xdelta * length/lengthAB, ydelta * length/lengthAB);
+//		}
+		public void extendLine(double length){
+			double lengthAB = Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2);
+			lengthAB = Math.sqrt(lengthAB);
+
+			double x = b.x + (b.x - a.x) / (lengthAB / length);
+			double y = b.y + (b.y - a.y) / (lengthAB / length);
+			//
+			
+//			double x = b.x + length * Math.cos(Math.atan2(b.y, b.x));
+//			double y = b.y + length * Math.sin(Math.atan2(b.y, b.x));
+			
+			this.b = new Point(x, y);
+//			return new LineSegment(a, new Point(x, y));
+		}
 	}
 	
 	public static class Polygon {

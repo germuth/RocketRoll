@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
+    <Rocket>
+        <StartGravity>false</StartGravity>
+        <XPosition>2</XPosition>
+        <YPosition>2,375</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+    </Rocket>
     <CelestialBody>
         <Name>earth</Name>
         <XPosition>2</XPosition>

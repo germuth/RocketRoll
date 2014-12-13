@@ -14,10 +14,14 @@ import ca.gerumth.spaceprototype.R;
 import ca.gerumth.spaceprototype.Satellite;
 
 public class LevelParser {
-	public static ArrayList<Satellite> parseLevel(XmlPullParser xmlParser, Context context,
+	public static Level parseLevel(XmlPullParser xmlParser, Context context,
 			Satellite rocket, int height, int width) throws XmlPullParserException, IOException {
+		//list of all planets in the level
 		ArrayList<Satellite> celestialBodies = new ArrayList<Satellite>();
-
+		//whether the rocket is effected by gravity at the start of the level
+		boolean startGrav = false;
+		
+		//map from planet name to planet object
 		HashMap<String, Satellite> nameToObject = new HashMap<String, Satellite>();
 		nameToObject.put("rocket", rocket);
 		
@@ -32,7 +36,11 @@ public class LevelParser {
 					break;
 				case XmlPullParser.START_TAG :
 					String tag = xmlParser.getName();
-					if (tag.equals("CelestialBody")) {
+					if(tag.equals("Rocket")){
+						currentSat = rocket;
+					}else if(tag.equals("StartGravity")){
+						currentTag = LevelElement.STARTGRAVITY;
+					}else if (tag.equals("CelestialBody")) {
 						currentSat = new Satellite();
 						celestialBodies.add(currentSat);
 					} else if (tag.equals("Name")) {
@@ -61,6 +69,13 @@ public class LevelParser {
 				case XmlPullParser.TEXT :
 					if(currentTag != null){
 						switch (currentTag) {
+							case STARTGRAVITY:
+								if(xmlParser.getText().equals("true")){
+									startGrav = true;
+								}else{
+									startGrav = false;
+								}
+								break;
 							case NAME :
 								currentSat.name = xmlParser.getText();
 								nameToObject.put(xmlParser.getText(), currentSat);
@@ -112,7 +127,8 @@ public class LevelParser {
 			}
 			eventType = xmlParser.next();
 		}
-		return celestialBodies;
+		
+		return new Level(celestialBodies, rocket, startGrav); 
 	}
 
 	public static Drawable nameToDrawable(Resources res, String name) {

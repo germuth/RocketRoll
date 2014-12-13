@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Level>
+    <Rocket>
+        <StartGravity>false</StartGravity>
+        <XPosition>2</XPosition>
+        <YPosition>2,375</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+    </Rocket>
     <CelestialBody>
         <Name>earth</Name>
         <XPosition>2</XPosition>
@@ -12,6 +19,17 @@
         <Image>earth</Image>
     </CelestialBody>
     <CelestialBody>
+        <Name>pluto</Name>
+        <XPosition>2</XPosition>
+        <YPosition>2</YPosition>
+        <XSpeed>1300</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0</XGravity>
+        <YGravity>0</YGravity>
+        <Satellites></Satellites>
+        <Image>pluto</Image>
+    </CelestialBody>
+    <CelestialBody>
         <Name>sun</Name>
         <XPosition>2</XPosition>
         <YPosition>6</YPosition>
@@ -19,17 +37,17 @@
         <YSpeed>0</YSpeed>
         <XGravity>0.05</XGravity>
         <YGravity>0.05</YGravity>
-        <Satellites>earth</Satellites>
+        <Satellites>earth,pluto</Satellites>
         <Image>sun</Image>
     </CelestialBody>
     <CelestialBody>
         <Name>jupiter</Name>
-        <XPosition>4</XPosition>
-        <YPosition>2</YPosition>
+        <XPosition>2</XPosition>
+        <YPosition>2,130</YPosition>
         <XSpeed>0</XSpeed>
         <YSpeed>0</YSpeed>
-        <XGravity>0.05</XGravity>
-        <YGravity>0.05</YGravity>
+        <XGravity>0.04</XGravity>
+        <YGravity>0.04</YGravity>
         <Satellites>rocket</Satellites>
         <Image>jupiter</Image>
     </CelestialBody>
