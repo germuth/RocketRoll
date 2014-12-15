@@ -142,6 +142,10 @@ public class LevelParser {
 			return res.getDrawable(R.drawable.saturn);
 		} else if (name.equals("pluto")){
 			return res.getDrawable(R.drawable.pluto);
+		} else if(name.equals("uranus")){
+			return res.getDrawable(R.drawable.uranus);
+		} else if(name.equals("neptune")){
+			return res.getDrawable(R.drawable.neptune);
 		}
 		return null;
 	}
