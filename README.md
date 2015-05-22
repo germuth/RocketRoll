@@ -1,6 +1,5 @@
-SpacePrototype
+RocketRoll
 ==============
+Save the astronauts by guiding their rocket ship home!
 
-Prototype for upcoming space game on github
-
-
+Prototype for mobile physics game
