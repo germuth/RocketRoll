@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Level>
+    <Rocket>
+        <StartGravity>false</StartGravity>
+        <XPosition>2</XPosition>
+        <YPosition>2,375</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+    </Rocket>
+    <CelestialBody>
+        <Name>earth</Name>
+        <XPosition>2,150</XPosition>
+        <YPosition>6</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0</XGravity>
+        <YGravity>0</YGravity>
+        <Satellites></Satellites>
+        <Image>earth</Image>
+    </CelestialBody>
+    <CelestialBody>
+        <Name>uranus</Name>
+        <XPosition>4</XPosition>
+        <YPosition>2,125</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0.04</XGravity>
+        <YGravity>0.04</YGravity>
+        <Satellites>rocket</Satellites>
+        <Image>uranus</Image>
+    </CelestialBody>
+    <CelestialBody>
+        <Name>neptune</Name>
+        <XPosition>2,100</XPosition>
+        <YPosition>2,-100</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0.03</XGravity>
+        <YGravity>0.03</YGravity>
+        <Satellites>rocket</Satellites>
+        <Image>neptune</Image>
+    </CelestialBody>
+</Level>

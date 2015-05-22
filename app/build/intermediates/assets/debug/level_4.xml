@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Level>
+    <Rocket>
+        <StartGravity>true</StartGravity>
+        <XPosition>2</XPosition>
+        <YPosition>2,275</YPosition>
+        <XSpeed>200</XSpeed>
+        <YSpeed>0</YSpeed>
+    </Rocket>
+    <CelestialBody>
+        <Name>earth</Name>
+        <XPosition>2</XPosition>
+        <YPosition>6</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0</XGravity>
+        <YGravity>0</YGravity>
+        <Satellites></Satellites>
+        <Image>earth</Image>
+    </CelestialBody>
+    <CelestialBody>
+        <Name>saturn</Name>
+        <XPosition>2</XPosition>
+        <YPosition>2,100</YPosition>
+        <XSpeed>0</XSpeed>
+        <YSpeed>0</YSpeed>
+        <XGravity>0.03</XGravity>
+        <YGravity>0.03</YGravity>
+        <Satellites>rocket</Satellites>
+        <Image>saturn</Image>
+    </CelestialBody>
+</Level>
